@@ -91,6 +91,8 @@ int main()
         return 1;
     }
 
+    cerr << "started http server...\n";
+
 
     const int max_client_buffer_size = 1024;
     char buf[max_client_buffer_size];
@@ -115,22 +117,23 @@ int main()
             // ошибка получения данных
             cerr << "recv failed: " << result << "\n";
             closesocket(client_socket);
-        } else if (result == 0) {
+        }
+        else if (result == 0) {
             // соединение закрыто клиентом
             cerr << "connection closed...\n";
-        } else if (result > 0) {
+        }
+        else if (result > 0) {
             // Мы знаем фактический размер полученных данных, поэтому ставим метку конца строки
             // В буфере запроса.
             buf[result] = '\0';
 
             // Данные успешно получены
             // формируем тело ответа (HTML)
-            response_body << "<title>Test C++ HTTP Server</title>\n"
+            response_body << "<title>Document</title>\n"
                 << "<h1>Test page</h1>\n"
                 << "<p>This is body of the test page...</p>\n"
                 << "<h2>Request headers</h2>\n"
-                << "<pre>" << buf << "</pre>\n"
-                << "<em><small>Test C++ Http Server</small></em>\n";
+                << "<pre>" << buf << "</pre>\n";
 
             // Формируем весь ответ вместе с заголовками
             response << "HTTP/1.1 200 OK\r\n"
@@ -145,9 +148,10 @@ int main()
                 response.str().length(), 0);
 
             if (result == SOCKET_ERROR) {
-                // произошла ошибка при отправле данных
+                // произошла ошибка при отправке данных
                 cerr << "send failed: " << WSAGetLastError() << "\n";
             }
+
             // Закрываем соединение к клиентом
             closesocket(client_socket);
         }
@@ -159,3 +163,4 @@ int main()
     WSACleanup();
     return 0;
 }
+
